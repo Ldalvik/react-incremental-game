@@ -4,6 +4,10 @@ import ReactDOM from 'react-dom/client';
 import App from './components/App';
 import reportWebVitals from './tests/reportWebVitals';
 
+
+import 'react-toastify/dist/ReactToastify.css';
+import 'foundation-sites/dist/css/foundation.min.css';
+
 import './assets/app.scss'
 import './assets/index.css'
 
