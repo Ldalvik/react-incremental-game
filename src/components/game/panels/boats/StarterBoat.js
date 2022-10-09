@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import 'react-toastify/dist/ReactToastify.css';
+import { getItem } from '../../config/LootTable';
 
 const FISHING_TIME = 5
+const STORAGE = 5
 
-const StarterBoat = ({ makeToast }) => {
+const StarterBoat = ({ makeToast, saveGame, setSaveGame }) => {
     const [secondsRemaining, setSecondsRemaining] = useState(0)
     const [status, setStatus] = useState("Fish")
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -23,9 +24,20 @@ const StarterBoat = ({ makeToast }) => {
                     `${twoDigits(hoursToDisplay)}:${twoDigits(minutesToDisplay)}:${twoDigits(secondsToDisplay)}`
                 )
             } else {
+                const fishCaught = Math.round(Math.random() * (saveGame.starterBoat.upgrades.storage + STORAGE))
+                let all = []
+                for (var i = 0; i < fishCaught; i++) all.push(getItem())
+                const totalEarned = (all.reduce((accumulator, item) => {
+                    return accumulator + item.price;
+                }, 0))
+
+                const bonusCash = Math.ceil(
+                    totalEarned * ((saveGame.starterBoat.level + saveGame.starterBoat.upgrades.sellRate) * 0.1))
+                const collection = all.map(({name, price}) => `${name} ($${price})\n`)
+
                 setBtnDisabled(false)
                 setStatus("Fish")
-                makeToast("You caught fish!")
+                makeToast(`You caught:\n${collection ? collection : "Nothing"} and sold it for $${totalEarned} + $${bonusCash} from bonuses.`)
             }
         }, btnDisabled ? 1000 : null
     )
@@ -63,26 +75,29 @@ const StarterBoat = ({ makeToast }) => {
 
     let stats
     if (statsEnabled) {
+
         stats =
             <>
                 <div class="boat-stats">Fishing speed: {FISHING_TIME} seconds</div>
-                <div class="boat-stats">Storage: 5</div>
-                <div class="boat-stats">Level: 1 (0/150xp)</div>
+                <div class="boat-stats">Storage: {saveGame.starterBoat.storage}</div>
+                <div class="boat-stats">Level: 1 ({saveGame.starterBoat.xp}/150xp)</div>
             </>
     }
 
     return (
-        <div className="card boat-card">
-            <div className="card-section">
-                <div className="text-center">
-                    <h5>Dilapidated Boat</h5>
-                    <a onClick={statsButtonHandler}>{statsEnabled ? "Hide Stats" : "Show Stats"}</a>
+        <div className="cell medium-2 large-2">
+            <div className="card boat-card">
+                <div className="card-section">
+                    <div className="text-center">
+                        <h5>Dilapidated Boat</h5>
+                        <a onClick={statsButtonHandler}>{statsEnabled ? "Hide Stats" : "Show Stats"}</a>
+                    </div>
+                    <div className="divider" />
+                    {stats}
+                    <button onClick={() => handleStart(FISHING_TIME)} class="button fish-btn" disabled={btnDisabled}>
+                        {status}
+                    </button>
                 </div>
-                <div className="divider" />
-                {stats}
-                <button onClick={() => handleStart(FISHING_TIME)} class="button fish-btn" disabled={btnDisabled}>
-                    {status}
-                </button>
             </div>
         </div>
     )
