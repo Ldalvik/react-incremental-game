@@ -6,7 +6,8 @@ import { useState, useEffect } from "react"
 const SAVE_FREQUENCY = 10000
 const GoneFishing = () => {
   const [saveGame, setSaveGame] = useState({
-
+    cash: 50,
+    ownsRentalBoat: false
   })
 
   useEffect(() => {
@@ -21,6 +22,7 @@ const GoneFishing = () => {
     <GridContainer>
       <PlayerStatsPanel saveGame={saveGame} />
       <BoatsPanel saveGame={saveGame} setSaveGame={setSaveGame} />
+      <FishingNetsPanel saveGame={saveGame} setSaveGame={setSaveGame} />
     </GridContainer>
   )
 }

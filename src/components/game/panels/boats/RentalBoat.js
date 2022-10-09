@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 
 const FISHING_TIME = 5
+const PURCHASE_PRICE = 50
 
-const StarterBoat = ({ makeToast }) => {
+
+const RentalBoat = ({ makeToast, saveGame, setSaveGame }) => {
     const [secondsRemaining, setSecondsRemaining] = useState(0)
     const [status, setStatus] = useState("Fish")
-    const [btnDisabled, setBtnDisabled] = useState(false)
+    const [onFishingTrip, setOnFishingTrip] = useState(false)
     const [statsEnabled, setStatsEnabled] = useState(false)
 
     const secondsToDisplay = secondsRemaining % 60
@@ -23,11 +25,11 @@ const StarterBoat = ({ makeToast }) => {
                     `${twoDigits(hoursToDisplay)}:${twoDigits(minutesToDisplay)}:${twoDigits(secondsToDisplay)}`
                 )
             } else {
-                setBtnDisabled(false)
+                setOnFishingTrip(false)
                 setStatus("Fish")
-                makeToast("You caught fish!")
+                makeToast("You caught more fish!")
             }
-        }, btnDisabled ? 1000 : null
+        }, onFishingTrip ? 1000 : null
     )
 
     function useInterval(callback, delay) {
@@ -56,7 +58,29 @@ const StarterBoat = ({ makeToast }) => {
             `${twoDigits(hoursToDisplay)}:${twoDigits(minutesToDisplay)}:${twoDigits(secondsToDisplay)}`
         )
         setSecondsRemaining(time - 1)
-        setBtnDisabled(true)
+        setOnFishingTrip(true)
+    }
+
+    const purchaseBoat = () => {
+        setSaveGame({
+            ...saveGame,
+            ownsRentalBoat: true,
+            cash: saveGame.cash - PURCHASE_PRICE
+        })
+    }
+
+    const canPurchase = saveGame.cash >= PURCHASE_PRICE
+
+    let currentButton =
+        <button onClick={purchaseBoat} class="button fish-btn" disabled={!canPurchase}>
+            Purchase (${PURCHASE_PRICE})
+        </button>
+
+    if (saveGame.ownsRentalBoat) {
+        currentButton =
+            <button onClick={() => handleStart(FISHING_TIME)} class="button fish-btn" disabled={onFishingTrip}>
+                {status}
+            </button>
     }
 
     const statsButtonHandler = () => setStatsEnabled(!statsEnabled)
@@ -71,22 +95,24 @@ const StarterBoat = ({ makeToast }) => {
             </>
     }
 
-    return (
+    const rentalBoat =
         <div className="card boat-card">
             <div className="card-section">
-                <div className="text-center">
-                    <h5>Dilapidated Boat</h5>
+            <div className="text-center">
+                    <h5>Rental Boat</h5>
                     <a onClick={statsButtonHandler}>{statsEnabled ? "Hide Stats" : "Show Stats"}</a>
                 </div>
                 <div className="divider" />
                 {stats}
-                <button onClick={() => handleStart(FISHING_TIME)} class="button fish-btn" disabled={btnDisabled}>
-                    {status}
-                </button>
+                {currentButton}
             </div>
         </div>
+
+    return (<>
+        { rentalBoat }
+        </>
     )
 
 }
 
-export default StarterBoat
+export default RentalBoat
