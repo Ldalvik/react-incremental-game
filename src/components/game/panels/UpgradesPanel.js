@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { TabItem, Tabs, TabPanel, TabsContent } from "react-foundation"
+import RentalBoatUpgrades from "./upgrades/RentalBoatUpgrades"
 import StarterBoatUpgrades from "./upgrades/StarterBoatUpgrades"
 
 const UpgradesPanel = ({ saveGame, setSaveGame }) => {
@@ -27,7 +28,7 @@ const UpgradesPanel = ({ saveGame, setSaveGame }) => {
                 <TabPanel isActive={activeTab.boat} id="boat">
                     <div className="grid-x grid-padding-x grid-padding-y">
                         <StarterBoatUpgrades saveGame={saveGame} setSaveGame={setSaveGame} />
-                        <StarterBoatUpgrades saveGame={saveGame} setSaveGame={setSaveGame} />
+                        <RentalBoatUpgrades  saveGame={saveGame} setSaveGame={setSaveGame} />
                     </div>
                 </TabPanel>
                 <TabPanel isActive={activeTab.nets} id="nets">
