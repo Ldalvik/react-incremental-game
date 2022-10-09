@@ -1,8 +1,43 @@
 .bar-shadow {
-  box-shadow: 0 4px 4px -2px rgba(0,0,0,.3);
+  box-shadow: 0 4px 4px -2px rgba(0, 0, 0, .3);
 }
 
-.game-menu {
+.menu-btn {
   border-radius: 5px;
-  box-shadow: 0 4px 4px -2px rgba(0,0,0,.3);
+  box-shadow: 0 4px 4px -2px rgba(0, 0, 0, .3);
+}
+
+
+.stats-card {
+  box-shadow: 0 4px 4px -2px rgba(0, 0, 0, .2);
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+
+.current-balance {
+  font-size: 50dp;
+}
+
+.fish-btn {
+  margin-top: 10px;
+  width: 100%;
+  transition: 0.2s all;
+}
+
+.fish-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 2px -2px rgba(0, 0, 0, .4);
+}
+
+.boat-stats {
+  font-size: small;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.boats-panel {
+  margin-left: 50px;
+}
+
+.divider {
+  border-top: 2px solid #bbb;
+  margin-bottom: 10px;
 }
