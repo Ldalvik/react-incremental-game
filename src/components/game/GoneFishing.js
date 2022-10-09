@@ -12,12 +12,20 @@ const GoneFishing = () => {
     cash: 50,
     starterBoat: {
       level: 1,
-      storage: 5,
       xp: 0,
       upgrades: {
-        sellRate: 0,
-        storage: 0,
-        xpGain: 0
+        sellRate: 1,
+        storage: 1,
+        xpGain: 1
+      }
+    },
+    rentalBoat: {
+      level: 1,
+      xp: 0,
+      upgrades: {
+        sellRate: 1,
+        storage: 1,
+        xpGain: 1
       }
     },
     ownsRentalBoat: false
