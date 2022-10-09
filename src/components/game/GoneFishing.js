@@ -28,7 +28,8 @@ const GoneFishing = () => {
         xpGain: 1
       }
     },
-    ownsRentalBoat: false
+    rentalBoatOwned: false,
+    trawlerBoatEarned: false
   })
 
   useEffect(() => {
