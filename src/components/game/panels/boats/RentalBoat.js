@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import 'react-toastify/dist/ReactToastify.css';
 
 const FISHING_TIME = 5
 const PURCHASE_PRICE = 50
@@ -95,22 +94,20 @@ const RentalBoat = ({ makeToast, saveGame, setSaveGame }) => {
             </>
     }
 
-    const rentalBoat =
-        <div className="card boat-card">
-            <div className="card-section">
-            <div className="text-center">
-                    <h5>Rental Boat</h5>
-                    <a onClick={statsButtonHandler}>{statsEnabled ? "Hide Stats" : "Show Stats"}</a>
+    return (
+        <div className="cell medium-2 large-2">
+            <div className="card boat-card">
+                <div className="card-section">
+                    <div className="text-center">
+                        <h5>Rental Boat</h5>
+                        <a onClick={statsButtonHandler}>{statsEnabled ? "Hide Stats" : "Show Stats"}</a>
+                    </div>
+                    <div className="divider" />
+                    {stats}
+                    {currentButton}
                 </div>
-                <div className="divider" />
-                {stats}
-                {currentButton}
             </div>
         </div>
-
-    return (<>
-        { rentalBoat }
-        </>
     )
 
 }
