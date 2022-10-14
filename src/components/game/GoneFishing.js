@@ -30,8 +30,6 @@ const GoneFishing = () => {
     boatsOwned: 0
   })
 
-  console.log(saveGame)
-
   return (
     <GridContainer>
       <PlayerStatsPanel saveGame={saveGame} />

@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { getItem, getChance } from '../../config/LootTable';
 import { allBoats } from '../../config/BoatTables'
 
-const Boat = ({ id, name, price, fishingSpeed, storage, boat, lootTable, 
-                makeToast, saveGame, setSaveGame }) => {
+const Boat = ({ id, name, price, fishingSpeed, storage, boat, lootTable,
+    makeToast, saveGame, setSaveGame }) => {
 
     const [secondsRemaining, setSecondsRemaining] = useState(0)
     const [status, setStatus] = useState("Fish")
@@ -25,23 +25,7 @@ const Boat = ({ id, name, price, fishingSpeed, storage, boat, lootTable,
                     `${twoDigits(hoursToDisplay)}:${twoDigits(minutesToDisplay)}:${twoDigits(secondsToDisplay)}`
                 )
             } else {
-                const fishCaught = Math.round(Math.random() * (saveGame[boat].upgrades.storage + storage))
-                let all = []
-                for (var i = 0; i < fishCaught; i++) all.push(getItem(lootTable))
-                const totalEarned = (all.reduce((accumulator, item) => {
-                    return accumulator + item.price;
-                }, 0))
-
-                const bonusCash = Math.ceil(
-                    totalEarned * ((saveGame[boat].level + saveGame[boat].upgrades.sellRate) * 0.1))
-                const collection = all.map(({ name, price }) => `${name} ($${price})\n`)
-
-                setSaveGame({ ...saveGame, cash: saveGame.cash + (totalEarned + bonusCash) })
-
-                setOnFishingTrip(false)
-                setStatus("Fish")
-                makeToast(`You caught:\n${(collection != null) ? collection : "Nothing"} and sold it for $${totalEarned} + $${bonusCash} from bonuses.`)
-
+                goFishing()
             }
         }, onFishingTrip ? 1000 : null
     )
@@ -63,6 +47,33 @@ const Boat = ({ id, name, price, fishingSpeed, storage, boat, lootTable,
         }, [delay])
     }
 
+    const goFishing = () => {
+        const fishCaught = Math.round(Math.random() * (saveGame[boat].upgrades.storage + storage))
+        let all = []
+        for (var i = 0; i < fishCaught; i++) all.push(getItem(lootTable))
+        const totalEarned = (all.reduce((accumulator, item) => {
+            return accumulator + item.price;
+        }, 0))
+
+        const bonusCash = Math.ceil(
+            totalEarned * ((saveGame[boat].level + saveGame[boat].upgrades.sellRate) * 0.1))
+
+        const collection = all.map(({ name, price }) => `${name} ($${price})\n`)
+
+        setSaveGame(state => {
+            return {
+                ...state,
+                cash: state.cash + totalEarned + bonusCash,
+            }
+        })
+
+        const fishCaughtMessage = collection !== null ? collection : "Nothing"
+        
+        setOnFishingTrip(false)
+        setStatus("Fish")
+        makeToast(`You caught:\n${fishCaughtMessage} and sold it for $${totalEarned + bonusCash} (This includes $${bonusCash} bonus cash)`)
+    }
+
     const handleStart = (time) => {
         const secondsToDisplay = time % 60
         const minutesRemaining = (time - secondsToDisplay) / 60
@@ -76,10 +87,12 @@ const Boat = ({ id, name, price, fishingSpeed, storage, boat, lootTable,
     }
 
     const purchaseBoat = () => {
-        setSaveGame({
-            ...saveGame,
-            boatsOwned: (saveGame.boatsOwned + 1),
-            cash: (saveGame.cash - price),
+        setSaveGame(state => {
+            return {
+                ...state,
+                cash: state.cash - price,
+                boatsOwned: state.boatsOwned + 1
+            }
         })
         setOwnsBoat(true)
     }

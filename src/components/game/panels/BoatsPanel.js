@@ -39,19 +39,24 @@ const BoatsPanel = ({ saveGame, setSaveGame }) => {
 
 
     useEffect(() => {
-        setBoats(allBoats.map((boat) => <Boat
-            key={boat.id}
-            id={boat.id}
-            name={boat.name}
-            price={boat.price}
-            fishingSpeed={boat.fishingSpeed}
-            storage={boat.storage}
-            boat={boat.tag}
-            lootTable={boat.lootTable}
-            makeToast={makeToast}
-            saveGame={saveGame}
-            setSaveGame={setSaveGame}
-        />))
+        const currentBoats = allBoats.map((boat) => {
+            if (boat.id <= saveGame.boatsOwned) {
+                return <Boat
+                    key={boat.id}
+                    id={boat.id}
+                    name={boat.name}
+                    price={boat.price}
+                    fishingSpeed={boat.fishingSpeed}
+                    storage={boat.storage}
+                    boat={boat.tag}
+                    lootTable={boat.lootTable}
+                    makeToast={makeToast}
+                    saveGame={saveGame}
+                    setSaveGame={setSaveGame}
+                />
+            }
+        })
+        setBoats(currentBoats)
     }, [saveGame.boatsOwned])
 
     let boatMessage
