@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getItem, getChance } from '../../config/LootTable';
+import { allBoats } from '../../config/BoatTables'
 
-const Boat = ({ name, price, fishingSpeed, storage, boat, lootTable, makeToast, saveGame, setSaveGame }) => {
+const Boat = ({ id, name, price, fishingSpeed, storage, boat, lootTable, 
+                makeToast, saveGame, setSaveGame }) => {
+
     const [secondsRemaining, setSecondsRemaining] = useState(0)
     const [status, setStatus] = useState("Fish")
     const [onFishingTrip, setOnFishingTrip] = useState(false)
     const [statsEnabled, setStatsEnabled] = useState(false)
+    const [ownsBoat, setOwnsBoat] = useState(false)
 
     const secondsToDisplay = secondsRemaining % 60
     const minutesRemaining = (secondsRemaining - secondsToDisplay) / 60
@@ -74,21 +78,22 @@ const Boat = ({ name, price, fishingSpeed, storage, boat, lootTable, makeToast, 
     const purchaseBoat = () => {
         setSaveGame({
             ...saveGame,
-            [`${boat}Owned`]: true,
-            cash: saveGame.cash - price
+            boatsOwned: (saveGame.boatsOwned + 1),
+            cash: (saveGame.cash - price),
         })
+        setOwnsBoat(true)
     }
 
     const canPurchase = saveGame.cash >= price
 
     let currentButton =
-        <button onClick={purchaseBoat} class="button fish-btn" disabled={!canPurchase}>
+        <button onClick={purchaseBoat} className="button fish-btn" disabled={!canPurchase}>
             Purchase (${price})
         </button>
 
-    if (saveGame[`${boat}Owned`]) {
+    if (saveGame.boatsOwned > id || ownsBoat) {
         currentButton =
-            <button onClick={() => handleStart(fishingSpeed)} class="button fish-btn" disabled={onFishingTrip}>
+            <button onClick={() => handleStart(fishingSpeed)} className="button fish-btn" disabled={onFishingTrip}>
                 {status}
             </button>
     }
@@ -109,11 +114,11 @@ const Boat = ({ name, price, fishingSpeed, storage, boat, lootTable, makeToast, 
     if (statsEnabled) {
         stats =
             <>
-                <div class="boat-stats">Fishing speed: {fishingSpeed} seconds</div>
-                <div class="boat-stats">Storage: {saveGame[boat].upgrades.storage + storage}</div>
-                <div class="boat-stats">Can catch: <ul>{catchableFishData}</ul></div>
-                <div class="boat-stats">Sell Rate: {saveGame[boat].upgrades.sellRate * 0.1}x</div>
-                <div class="boat-stats">Level: 1 (0/150xp)</div>
+                <div className="boat-stats">Fishing speed: {fishingSpeed} seconds</div>
+                <div className="boat-stats">Storage: {saveGame[boat].upgrades.storage + storage}</div>
+                <div className="boat-stats">Can catch: <ul>{catchableFishData}</ul></div>
+                <div className="boat-stats">Sell Rate: {saveGame[boat].upgrades.sellRate * 0.1}x</div>
+                <div className="boat-stats">Level: 1 (0/150xp)</div>
             </>
     }
 

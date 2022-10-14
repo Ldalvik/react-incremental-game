@@ -1,0 +1,1 @@
+/* This will be the static upgrade component file */
