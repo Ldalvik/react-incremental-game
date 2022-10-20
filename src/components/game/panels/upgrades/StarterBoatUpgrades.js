@@ -1,4 +1,4 @@
-
+/* THIS IS A REFERENCE FILE, SEE UPGRADES.JS */
 const STORAGE = {
     price: 60,
     modifier: 1.6
@@ -25,7 +25,7 @@ const StarterBoatUpgrades = ({ saveGame, setSaveGame }) => {
         
         const canPurchaseStorage = saveGame.cash >= storageUpgradePrice
         let storageButton =
-            <button onClick={upgradeStorage} class="button fish-btn" disabled={!canPurchaseStorage}>
+            <button onClick={upgradeStorage} className="button fish-btn" disabled={!canPurchaseStorage}>
                 +1 Storage (${storageUpgradePrice})
             </button>
 

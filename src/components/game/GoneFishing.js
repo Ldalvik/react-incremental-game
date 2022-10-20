@@ -4,9 +4,8 @@ import BoatsPanel from "./panels/BoatsPanel"
 import FishingNetsPanel from "./panels/FishingNetsPanel"
 import UpgradesPanel from "./panels/UpgradesPanel"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 
-const SAVE_FREQUENCY = 10000
 const GoneFishing = () => {
   const [saveGame, setSaveGame] = useState({
     cash: 50,
@@ -28,16 +27,8 @@ const GoneFishing = () => {
         xpGain: 1
       }
     },
-    ownsRentalBoat: false
+    boatsOwned: 0
   })
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      console.log('Saves every 10 seconds');
-    }, SAVE_FREQUENCY);
-
-    return () => clearInterval(interval)
-  }, [])
 
   return (
     <GridContainer>
@@ -49,7 +40,7 @@ const GoneFishing = () => {
       <FishingNetsPanel saveGame={saveGame} setSaveGame={setSaveGame} />
       <div className="divider" />
       <UpgradesPanel saveGame={saveGame} setSaveGame={setSaveGame} />
-    </GridContainer >
+    </GridContainer>
   )
 }
 

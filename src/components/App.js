@@ -1,8 +1,19 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import GoneFishing from "./game/GoneFishing";
 import SplashScreen from './SplashScreen'
+import { useEffect } from "react"
 
+const SAVE_FREQUENCY = 10000
 const App = () => {
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log('Saves every 10 seconds');
+    }, SAVE_FREQUENCY);
+
+    return () => clearInterval(interval)
+  }, [])
+  
   return (
     <BrowserRouter>
       <Routes>

@@ -11,9 +11,9 @@ const UpgradesPanel = ({ saveGame, setSaveGame }) => {
 
     const boatTabHandler = () => setActiveTab({ boat: true, nets: false })
 
-
     const netsTabHandler = () => setActiveTab({ boat: false, nets: true })
 
+    //Eventually use map to only show puchased boat upgrades
     return (
         <div className="cell">
             <Tabs>
@@ -27,12 +27,12 @@ const UpgradesPanel = ({ saveGame, setSaveGame }) => {
             <TabsContent>
                 <TabPanel isActive={activeTab.boat} id="boat">
                     <div className="grid-x grid-padding-x grid-padding-y">
-                        <StarterBoatUpgrades saveGame={saveGame} setSaveGame={setSaveGame} />
-                        <RentalBoatUpgrades  saveGame={saveGame} setSaveGame={setSaveGame} />
+                        {/* <StarterBoatUpgrades saveGame={saveGame} setSaveGame={setSaveGame} />
+                        <RentalBoatUpgrades  saveGame={saveGame} setSaveGame={setSaveGame} /> */}
                     </div>
                 </TabPanel>
                 <TabPanel isActive={activeTab.nets} id="nets">
-                    The content of the second panel
+
                 </TabPanel>
             </TabsContent>
         </div>

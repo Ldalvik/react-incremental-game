@@ -1,60 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getItem, getChance } from '../../config/LootTable';
+import { allBoats } from '../../config/BoatTables'
 
-const FISHING_TIME = 10
-const PURCHASE_PRICE = 50
-const STORAGE = 8
+const Boat = ({ id, name, price, fishingSpeed, storage, boat, lootTable,
+    makeToast, saveGame, setSaveGame }) => {
 
-const TABLE = [
-    {
-        name: "Carp",
-        weight: 100,
-        price: 1,
-        accumulatedWeight: null
-    },
-    {
-        name: "Cod",
-        weight: 100,
-        price: 1,
-        accumulatedWeight: null
-    },
-    {
-        name: "Sunfish",
-        weight: 90,
-        price: 2,
-        accumulatedWeight: null
-    },
-    {
-        name: "Trout",
-        weight: 80,
-        price: 3,
-        accumulatedWeight: null
-    },
-    // {
-    //     name: "Smallmouth Bass",
-    //     weight: 80,
-    //     price: 3,
-    //     accumulatedWeight: null
-    // },
-    // {
-    //     name: "Largemouth Bass",
-    //     weight: 60,
-    //     price: 4,
-    //     accumulatedWeight: null
-    // },
-    // {
-    //     name: "Catfish",
-    //     weight: 50,
-    //     price: 5,
-    //     accumulatedWeight: null
-    // },
-]
-
-const RentalBoat = ({ makeToast, saveGame, setSaveGame }) => {
     const [secondsRemaining, setSecondsRemaining] = useState(0)
     const [status, setStatus] = useState("Fish")
     const [onFishingTrip, setOnFishingTrip] = useState(false)
     const [statsEnabled, setStatsEnabled] = useState(false)
+    const [ownsBoat, setOwnsBoat] = useState(false)
 
     const secondsToDisplay = secondsRemaining % 60
     const minutesRemaining = (secondsRemaining - secondsToDisplay) / 60
@@ -70,23 +25,7 @@ const RentalBoat = ({ makeToast, saveGame, setSaveGame }) => {
                     `${twoDigits(hoursToDisplay)}:${twoDigits(minutesToDisplay)}:${twoDigits(secondsToDisplay)}`
                 )
             } else {
-                const fishCaught = Math.round(Math.random() * (saveGame.rentalBoat.upgrades.storage + STORAGE))
-                let all = []
-                for (var i = 0; i < fishCaught; i++) all.push(getItem(TABLE))
-                const totalEarned = (all.reduce((accumulator, item) => {
-                    return accumulator + item.price;
-                }, 0))
-
-                const bonusCash = Math.ceil(
-                    totalEarned * ((saveGame.starterBoat.level + saveGame.starterBoat.upgrades.sellRate) * 0.1))
-                const collection = all.map(({ name, price }) => `${name} ($${price})\n`)
-
-                setSaveGame({ ...saveGame, cash: saveGame.cash + (totalEarned + bonusCash) })
-
-                setOnFishingTrip(false)
-                setStatus("Fish")
-                makeToast(`You caught:\n${(collection != null) ? collection : "Nothing"} and sold it for $${totalEarned} + $${bonusCash} from bonuses.`)
-
+                goFishing()
             }
         }, onFishingTrip ? 1000 : null
     )
@@ -108,6 +47,33 @@ const RentalBoat = ({ makeToast, saveGame, setSaveGame }) => {
         }, [delay])
     }
 
+    const goFishing = () => {
+        const fishCaught = Math.round(Math.random() * (saveGame[boat].upgrades.storage + storage))
+        let all = []
+        for (var i = 0; i < fishCaught; i++) all.push(getItem(lootTable))
+        const totalEarned = (all.reduce((accumulator, item) => {
+            return accumulator + item.price;
+        }, 0))
+
+        const bonusCash = Math.ceil(
+            totalEarned * ((saveGame[boat].level + saveGame[boat].upgrades.sellRate) * 0.1))
+
+        const collection = all.map(({ name, price }) => `${name} ($${price})\n`)
+
+        setSaveGame(state => {
+            return {
+                ...state,
+                cash: state.cash + totalEarned + bonusCash,
+            }
+        })
+
+        const fishCaughtMessage = collection !== null ? collection : "Nothing"
+        
+        setOnFishingTrip(false)
+        setStatus("Fish")
+        makeToast(`You caught:\n${fishCaughtMessage} and sold it for $${totalEarned + bonusCash} (This includes $${bonusCash} bonus cash)`)
+    }
+
     const handleStart = (time) => {
         const secondsToDisplay = time % 60
         const minutesRemaining = (time - secondsToDisplay) / 60
@@ -121,31 +87,34 @@ const RentalBoat = ({ makeToast, saveGame, setSaveGame }) => {
     }
 
     const purchaseBoat = () => {
-        setSaveGame({
-            ...saveGame,
-            ownsRentalBoat: true,
-            cash: saveGame.cash - PURCHASE_PRICE
+        setSaveGame(state => {
+            return {
+                ...state,
+                cash: state.cash - price,
+                boatsOwned: state.boatsOwned + 1
+            }
         })
+        setOwnsBoat(true)
     }
 
-    const canPurchase = saveGame.cash >= PURCHASE_PRICE
+    const canPurchase = saveGame.cash >= price
 
     let currentButton =
-        <button onClick={purchaseBoat} class="button fish-btn" disabled={!canPurchase}>
-            Purchase (${PURCHASE_PRICE})
+        <button onClick={purchaseBoat} className="button fish-btn" disabled={!canPurchase}>
+            Purchase (${price})
         </button>
 
-    if (saveGame.ownsRentalBoat) {
+    if (saveGame.boatsOwned > id || ownsBoat) {
         currentButton =
-            <button onClick={() => handleStart(FISHING_TIME)} class="button fish-btn" disabled={onFishingTrip}>
+            <button onClick={() => handleStart(fishingSpeed)} className="button fish-btn" disabled={onFishingTrip}>
                 {status}
             </button>
     }
 
     const statsButtonHandler = () => setStatsEnabled(!statsEnabled)
 
-    const catchableFishData = TABLE.map((item) => {
-        const percent = (getChance(TABLE, item.name) * 100).toFixed(1)
+    const catchableFishData = lootTable.map((item) => {
+        const percent = (getChance(lootTable, item.name) * 100).toFixed(1)
         return (
             <li>
                 {`${item.name} ($${item.price}): `}
@@ -158,11 +127,11 @@ const RentalBoat = ({ makeToast, saveGame, setSaveGame }) => {
     if (statsEnabled) {
         stats =
             <>
-                <div class="boat-stats">Fishing speed: {FISHING_TIME} seconds</div>
-                <div class="boat-stats">Storage: {saveGame.rentalBoat.upgrades.storage + STORAGE}</div>
-                <div class="boat-stats">Can catch: <ul>{catchableFishData}</ul></div>
-                <div class="boat-stats">Sell Rate: {saveGame.rentalBoat.upgrades.sellRate * 0.1}x</div>
-                <div class="boat-stats">Level: 1 (0/150xp)</div>
+                <div className="boat-stats">Fishing speed: {fishingSpeed} seconds</div>
+                <div className="boat-stats">Storage: {saveGame[boat].upgrades.storage + storage}</div>
+                <div className="boat-stats">Can catch: <ul>{catchableFishData}</ul></div>
+                <div className="boat-stats">Sell Rate: {saveGame[boat].upgrades.sellRate * 0.1}x</div>
+                <div className="boat-stats">Level: 1 (0/150xp)</div>
             </>
     }
 
@@ -171,7 +140,7 @@ const RentalBoat = ({ makeToast, saveGame, setSaveGame }) => {
             <div className="card boat-card">
                 <div className="card-section">
                     <div className="text-center">
-                        <h5>Rental Boat</h5>
+                        <h5>{name}</h5>
                         <a onClick={statsButtonHandler}>{statsEnabled ? "Hide Stats" : "Show Stats"}</a>
                     </div>
                     <div className="divider" />
@@ -182,6 +151,7 @@ const RentalBoat = ({ makeToast, saveGame, setSaveGame }) => {
         </div>
     )
 
+
 }
 
-export default RentalBoat
+export default Boat
